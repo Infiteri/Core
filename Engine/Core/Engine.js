@@ -1,6 +1,7 @@
 import { EEngineLoadState } from '../Common/enums.js'
 import Input from '../Event/Input.js'
-import Application from './Application.js'
+import Application from '../core/Application.js'
+import Logger from '../Core/Logger.js'
 
 export default class Engine {
   /** @type {EEngineLoadState} */
@@ -12,7 +13,7 @@ export default class Engine {
   /**
    * List of subsystems to be initialized at the beginning of the application (before any user code gets started)
    */
-  static _INIT_SUBSYSTEMS = [Input]
+  static _INIT_SUBSYSTEMS = []
 
   /**
    * List of subsystems to be updated at the beginning every frame (before any user code gets started)
@@ -25,6 +26,38 @@ export default class Engine {
    * @returns {Application} The application to return
    */
   static CreateApplication() {}
+
+  /**
+   * Stops the engine whole, mostly used in assertion failures or fatal errors
+   */
+  static Destroy() {
+    Logger.Error(`Engine destroyed`)
+
+    for (let i = 0; i < this._INIT_SUBSYSTEMS.length; i++) {
+      const subsystem = this._INIT_SUBSYSTEMS[i]
+
+      if (subsystem.Destroy) {
+        subsystem.Destroy()
+        Logger.Info(`Subsystem ${subsystem.name} destroyed.`)
+      }
+    }
+
+    for (let i = 0; i < this._UPDATE_SUBSYSTEMS.length; i++) {
+      const subsystem = this._UPDATE_SUBSYSTEMS[i]
+
+      if (subsystem.Destroy) {
+        subsystem.Destroy()
+        Logger.Info(`Subsystem ${subsystem.name} destroyed.`)
+      }
+    }
+
+    this._INIT_SUBSYSTEMS = []
+    this._UPDATE_SUBSYSTEMS = []
+
+    if (this._application !== null) {
+      this._application.Crash()
+    }
+  }
 
   /**
    * Starts the core of the engine (subsystems)
@@ -41,6 +74,10 @@ export default class Engine {
       return
     }
 
+    //Append to subsystems
+    this._INIT_SUBSYSTEMS = [Logger, Input]
+    this._UPDATE_SUBSYSTEMS = []
+
     //Create a application (lifetime)
     this._application = this.StartApplication()
 
@@ -48,6 +85,7 @@ export default class Engine {
     for (let i = 0; i < this._INIT_SUBSYSTEMS.length; i++) {
       const subsystem = this._INIT_SUBSYSTEMS[i]
       subsystem.Initialize()
+      Logger.Info(`Subsystem ${subsystem.name} initialized successfully.`)
     }
 
     //Run the application
@@ -96,7 +134,7 @@ export default class Engine {
       //Make sure subsystem can be updated
       if (!subsystem.Update) {
         //prettier-ignore
-        console.error(`Subsystem '${subsystem.name}' doesn't have a update callback, the subsystem will get removed from the Engine._UPDATE_SUBSYSTEMS list`);
+        Logger.Log(`Subsystem '${subsystem.name}' doesn't have a update callback, the subsystem will get removed from the Engine._UPDATE_SUBSYSTEMS list.`);
         this._UPDATE_SUBSYSTEMS.splice(i, 1)
       } else {
         //Update subsystem
@@ -130,8 +168,11 @@ export default class Engine {
     }
 
     //prettier-ignore
-    if (!(app instanceof Application)) {
-      throw new Error('Engine.StartApplication: CreateApplication does not return a Application instance')
+    if (app instanceof Application) {
+    } else {
+      throw new Error(
+        'Engine.StartApplication: CreateApplication does not return a Application instance'
+      )
     }
 
     return app

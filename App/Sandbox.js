@@ -1,9 +1,9 @@
 import Core from '../Engine/Core.js'
 
 class Sandbox extends Core.Application {
-  OnRender() {}
-
-  OnInput(input) {}
+  OnInit() {
+    this._configuration.title = 'Game'
+  }
 }
 
 // Re-write the entry point
