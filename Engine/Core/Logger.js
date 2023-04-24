@@ -1,7 +1,17 @@
 import Engine from './Engine.js'
 
 export default class Logger {
-  static Initialize() {}
+  static _state = {
+    init: false,
+  }
+
+  static IsLoaded() {
+    return this._state.init
+  }
+
+  static Initialize() {
+    this._state.init = true
+  }
 
   static Info(message) {
     console.info(`%c[INFO]: ${message}`, 'color: gray')

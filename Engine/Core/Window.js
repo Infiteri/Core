@@ -1,3 +1,5 @@
+import Renderer from '../Renderer/Renderer.js'
+
 export default class Window {
   constructor(appConfig) {
     this._state = {
@@ -36,6 +38,8 @@ export default class Window {
 
     canvas.width = width
     canvas.height = height
+
+    Renderer.Resize()
   }
 
   /** @private */

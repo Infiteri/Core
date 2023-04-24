@@ -2,6 +2,9 @@ import { EEngineLoadState } from '../Common/enums.js'
 import Input from '../Event/Input.js'
 import Application from '../core/Application.js'
 import Logger from '../Core/Logger.js'
+import Renderer from '../Renderer/Renderer.js'
+import AssetManager from '../Assets/AssetManager.js'
+import MessageBus from '../Messages/MessageBus.js'
 
 export default class Engine {
   /** @type {EEngineLoadState} */
@@ -75,8 +78,8 @@ export default class Engine {
     }
 
     //Append to subsystems
-    this._INIT_SUBSYSTEMS = [Logger, Input]
-    this._UPDATE_SUBSYSTEMS = []
+    this._INIT_SUBSYSTEMS = [Logger, Input, Renderer, AssetManager]
+    this._UPDATE_SUBSYSTEMS = [MessageBus]
 
     //Create a application (lifetime)
     this._application = this.StartApplication()
@@ -84,8 +87,13 @@ export default class Engine {
     //Load subsystems
     for (let i = 0; i < this._INIT_SUBSYSTEMS.length; i++) {
       const subsystem = this._INIT_SUBSYSTEMS[i]
-      subsystem.Initialize()
-      Logger.Info(`Subsystem ${subsystem.name} initialized successfully.`)
+
+      if (!subsystem.IsLoaded()) {
+        subsystem.Initialize()
+        Logger.Info(`Subsystem '${subsystem.name}' initialized successfully.`)
+      } else {
+        Logger.Warn(`Subsystem already initialized '${subsystem.name}'.`)
+      }
     }
 
     //Run the application

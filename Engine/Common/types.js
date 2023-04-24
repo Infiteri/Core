@@ -4,6 +4,11 @@
 export let TInputType
 
 /**
+ * @typedef {"HIGH" | "NORMAL"}
+ */
+export let TMessagePriority
+
+/**
  * @typedef {"LEFT" | "MIDDLE" | "RIGHT"}
  */
 export let TMouseButtonType
@@ -24,3 +29,13 @@ export let TInputContextTypes
  * @prop {boolean} isDown Represents if the left mouse button is currently down
  */
 export let TMouseProps
+
+/**
+ * @typedef
+ * @prop {Array} data The data list
+ * @prop {number} size The size
+ * @prop {number} bufferType The buffer type (gl.ARRAY_BUFFER || gl.ELEMENT_ARRAY_BUFFER)
+ * @prop {number} usage The usage type (gl.STATIC_DRAW ...)
+ * @prop {number} drawMode The draw mode (gl.TRiANGLES ...)
+ */
+export let TBufferConfig
