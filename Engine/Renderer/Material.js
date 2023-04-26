@@ -24,6 +24,8 @@ export default class Material {
   Use() {
     const shader = Renderer._state.mainShader
 
+    if (!shader) return
+
     shader.Vec4fv('uColor', this.color.Get32Array())
     shader.Int('useTexture', 0)
 

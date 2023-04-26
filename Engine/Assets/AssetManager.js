@@ -1,7 +1,11 @@
 import Logger from '../Core/Logger.js'
 import Message from '../Messages/Message.js'
 import MessageBus from '../Messages/MessageBus.js'
-import { AssetLoader, ImageAssetLoader } from './AssetLoaders.js'
+import {
+  AssetLoader,
+  ImageAssetLoader,
+  ShaderAssetLoader
+} from './AssetLoaders.js'
 import { Asset } from './Assets.js'
 
 export default class AssetManager {
@@ -24,6 +28,7 @@ export default class AssetManager {
 
     //DONE: Add some default asset loaders
     this.loaders.push(new ImageAssetLoader())
+    this.loaders.push(new ShaderAssetLoader())
   }
 
   static LoadAsset(name) {

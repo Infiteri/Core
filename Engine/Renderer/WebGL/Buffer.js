@@ -1,5 +1,5 @@
 import { TBufferConfig } from '../../Common/types.js'
-import { gl } from '../Renderer.js'
+import Renderer, { gl } from '../Renderer.js'
 
 class BufferLayout {
   constructor(location, offset, size) {
@@ -67,6 +67,8 @@ export default class Buffer {
   }
 
   Draw() {
+    if (!Renderer.GetShader()) return
+
     if (this.bufferType === gl.ARRAY_BUFFER) {
       gl.drawArrays(this.drawMode, 0, this.data.length / this.size)
     } else {

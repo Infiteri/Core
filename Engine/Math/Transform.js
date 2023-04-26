@@ -1,17 +1,18 @@
-import core from '../Core.js'
+import { Matrix4x4 } from './Matrix4x4.js'
+import { Vector3 } from './Vector3.js'
 
 /**
  * Transform stuff:
  *
- * @this position: position - Vector3 ZERO
- * @this rotation: rotation - Vector3 ZERO
- * @this scale: scale - Vector3 ONE
+ * @this position position - Vector3 ZERO
+ * @this rotation rotation - Vector3 ZERO
+ * @this scale scale - Vector3 ONE
  */
 export class Transform {
   constructor() {
-    this.position = core.Vector3.ZERO
-    this.rotation = core.Vector3.ZERO
-    this.scale = core.Vector3.ONE
+    this.position = Vector3.ZERO
+    this.rotation = Vector3.ZERO
+    this.scale = Vector3.ONE
   }
 
   //   /**
@@ -27,20 +28,17 @@ export class Transform {
 
   /**
    * Returns the (translation * rotation) * scale in a Matrix4x4 format
-   * @see core.Matrix4x4 for the format
+   * @see Matrix4x4 for the format
    */
   GetMatrix() {
-    const translation = core.Matrix4x4.Translation(this.position)
-    const rotation = core.Matrix4x4.RotationXYZ(
-      new core.Vector3(this.rotation.x, this.rotation.y, this.rotation.z)
+    const translation = Matrix4x4.Translation(this.position)
+    const rotation = Matrix4x4.RotationXYZ(
+      new Vector3(this.rotation.x, this.rotation.y, this.rotation.z)
     )
 
-    const scale = core.Matrix4x4.Scale(this.scale)
+    const scale = Matrix4x4.Scale(this.scale)
 
     //?: T * R * E
-    return core.Matrix4x4.Multiply(
-      core.Matrix4x4.Multiply(translation, rotation),
-      scale
-    )
+    return Matrix4x4.Multiply(Matrix4x4.Multiply(translation, rotation), scale)
   }
 }

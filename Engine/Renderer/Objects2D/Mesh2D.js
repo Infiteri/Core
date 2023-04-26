@@ -1,4 +1,3 @@
-import Renderer from '../Renderer.js'
 import Buffer from '../WebGL/Buffer.js'
 import Geometry from './Geometries/Geometry.js'
 import Object2D from './Object2D.js'
@@ -25,8 +24,8 @@ export class Mesh2D extends Object2D {
     this.buffer.Init()
   }
 
-  Render() {
-    super.Render()
+  Render(model = undefined) {
+    super.Render(model)
 
     this.buffer.Bind()
     this.buffer.Draw()

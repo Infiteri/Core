@@ -1,5 +1,4 @@
 import Object from '../../Core/Object.js'
-import { Matrix4x4 } from '../../Math/Matrix4x4.js'
 import { Vector3 } from '../../Math/Vector3.js'
 import Material from '../Material.js'
 import Renderer from '../Renderer.js'
@@ -14,13 +13,17 @@ export default class Object2D extends Object {
     this.material = new Material()
   }
 
-  Render() {
-    this.UploadUniforms()
+  Render(model = undefined) {
+    this.UploadUniforms(model)
+
     this.material.Use()
   }
 
-  UploadUniforms() {
-    const positionMatrix = Matrix4x4.Translation(this.position)
-    Renderer.UploadMeshMat4OnShader(positionMatrix.ToFloat32Array())
+  UploadUniforms(model = undefined) {
+    if (model) {
+      const shader = Renderer.GetShader()
+
+      if (shader) shader.Mat4('uObject', model)
+    }
   }
 }

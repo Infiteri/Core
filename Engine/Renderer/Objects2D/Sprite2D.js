@@ -1,10 +1,8 @@
-import TextureManager from '../../Manager/TextureManager.js'
-import Renderer from '../Renderer.js'
 import Buffer from '../WebGL/Buffer.js'
 import Object2D from './Object2D.js'
 
 export default class Sprite2D extends Object2D {
-  constructor(textureName = '', width, height) {
+  constructor(textureName = undefined, width = 100, height = 100) {
     super()
 
     this.textureName = textureName
@@ -14,7 +12,7 @@ export default class Sprite2D extends Object2D {
     this.material.textureName = this.textureName
 
     //prettier-ignore
-    const data = [
+    this.data = [
           0, 0, 0, 0, 0, 
   
           0, this.height, 0, 0, 1,
@@ -29,7 +27,7 @@ export default class Sprite2D extends Object2D {
       ]
 
     this.buffer = new Buffer({
-      data,
+      data: this.data,
       size: 5,
     })
     this.buffer.AddLayout(0, 0, 3)
@@ -37,8 +35,12 @@ export default class Sprite2D extends Object2D {
     this.buffer.Init()
   }
 
-  Render() {
-    super.Render()
+  GetDataArray() {
+    return this.data
+  }
+
+  Render(model = undefined) {
+    super.Render(model)
 
     this.buffer.Bind()
     this.buffer.Draw()

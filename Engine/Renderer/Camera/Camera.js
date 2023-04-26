@@ -6,7 +6,7 @@ export default class Camera {
     this.projection = Matrix4x4.Identity()
 
     this.position = new Vector3(0, 0, 0)
-    this.model = Matrix4x4.Translation(this.position)
+    this.model = Matrix4x4.Invert(Matrix4x4.Translation(this.position))
   }
 
   get finalMatrix() {
@@ -20,6 +20,6 @@ export default class Camera {
   Recalculate() {}
 
   UpdateModel() {
-    this.model = Matrix4x4.Translation(this.position)
+    this.model = Matrix4x4.Invert(Matrix4x4.Translation(this.position))
   }
 }

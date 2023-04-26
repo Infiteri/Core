@@ -78,7 +78,8 @@ export default class Engine {
     }
 
     //Append to subsystems
-    this._INIT_SUBSYSTEMS = [Logger, Input, Renderer, AssetManager]
+    //ASSET MANAGER MUST COME BEFORE THE RENDERER
+    this._INIT_SUBSYSTEMS = [Logger, Input, AssetManager, Renderer]
     this._UPDATE_SUBSYSTEMS = [MessageBus]
 
     //Create a application (lifetime)
@@ -93,6 +94,18 @@ export default class Engine {
         Logger.Info(`Subsystem '${subsystem.name}' initialized successfully.`)
       } else {
         Logger.Warn(`Subsystem already initialized '${subsystem.name}'.`)
+      }
+    }
+
+    for (let i = 0; i < this._UPDATE_SUBSYSTEMS.length; i++) {
+      const subsystem = this._UPDATE_SUBSYSTEMS[i]
+
+      if (subsystem.Update) {
+        Logger.Info(`Subsystem '${subsystem.name}' is valid.`)
+      } else {
+        //prettier-ignore
+        Logger.Warn(`Subsystem '${subsystem.name}' doesn't have a update callback, the subsystem will get removed from the Engine._UPDATE_SUBSYSTEMS list.`);
+        this._UPDATE_SUBSYSTEMS.splice(i, 1)
       }
     }
 
@@ -139,15 +152,8 @@ export default class Engine {
     for (let i = 0; i < this._UPDATE_SUBSYSTEMS.length; i++) {
       const subsystem = this._UPDATE_SUBSYSTEMS[i]
 
-      //Make sure subsystem can be updated
-      if (!subsystem.Update) {
-        //prettier-ignore
-        Logger.Log(`Subsystem '${subsystem.name}' doesn't have a update callback, the subsystem will get removed from the Engine._UPDATE_SUBSYSTEMS list.`);
-        this._UPDATE_SUBSYSTEMS.splice(i, 1)
-      } else {
-        //Update subsystem
-        subsystem.Update()
-      }
+      //Update subsystem
+      subsystem.Update()
     }
 
     //Run code

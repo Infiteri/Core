@@ -1,46 +1,12 @@
+import AssetManager from '../Assets/AssetManager.js'
+import Message from '../Messages/Message.js'
+import MessageBus from '../Messages/MessageBus.js'
 import Camera from './Camera/Camera.js'
 import OrthographicCamera from './Camera/OrthographicCamera.js'
 import Shader from './WebGL/Shader.js'
 
 /** The main gl context used all throughout the engine.*/
 export const gl = document.querySelector('canvas').getContext('webgl2')
-
-const vs = `
-  attribute vec3 aPosition;
-  attribute vec2 aUVs;
-
-  uniform mat4 uCamera;
-  uniform mat4 uMesh;
-
-  varying vec2 vUVs;
-
-  void main() 
-  {
-    gl_Position = uCamera * uMesh * vec4(aPosition, 1.0);
-    vUVs = aUVs;
-  }
-`
-
-const fs = `
-  precision mediump float;
-
-  uniform vec4 uColor;
-  uniform sampler2D uSampler;
-  uniform int useTexture;
-
-  varying vec2 vUVs;
-
-  void main() 
-  {
-    vec4 finalColor = uColor;
-
-    if(useTexture == 1) {
-      finalColor = uColor * texture2D(uSampler, vUVs);
-    }
-
-    gl_FragColor = finalColor;
-  }
-`
 
 export default class Renderer {
   /**
@@ -57,6 +23,14 @@ export default class Renderer {
     mainCamera: null,
   }
 
+  static OnMessage(message) {
+    const data = message.context.data
+
+    const shader = new Shader(data.vertex, data.fragment)
+    this._state.mainShader = shader
+    this._state.render = true
+  }
+
   static IsLoaded() {
     return this._state.init
   }
@@ -66,14 +40,14 @@ export default class Renderer {
     //Set flags
     this._state.init = true
 
-    //Set the main shader
-    this._state.mainShader = new Shader(vs, fs)
-
     //Set the main camera
     this._state.mainCamera = new OrthographicCamera()
 
-    //Gets set when the shaders are fully loaded
-    this._state.render = true
+    AssetManager.GetAsset('/Engine/Renderer/WebGL/Shaders/MainShader.glsl')
+    MessageBus.AddSubscription(
+      Message.assetLoaded + '/Engine/Renderer/WebGL/Shaders/MainShader.glsl',
+      this
+    )
   }
 
   /**
@@ -82,10 +56,9 @@ export default class Renderer {
    * @returns {void}
    */
   static Render() {
-    if (!this._state.render) return
-
-    //TODO: Remove
     gl.clearColor(0, 0, 0, 1)
+
+    if (!this._state.render) return
 
     this.ClearScreen()
 
@@ -110,14 +83,26 @@ export default class Renderer {
   }
 
   static Resize(width = innerWidth, height = innerHeight) {
-    if (!this._state.render || !this._state.init) return
-
     gl.viewport(0, 0, width, height)
 
     //DONE: Camera resizing
     if (this._state.mainCamera !== null) {
       this._state.mainCamera.Recalculate()
     }
+  }
+
+  static SetOrthographicCamera(cameraInstance) {
+    if (cameraInstance) {
+      this._state.mainCamera = cameraInstance
+    }
+  }
+
+  static GetCamera() {
+    return this._state.mainCamera
+  }
+
+  static GetShader() {
+    return this._state.mainShader
   }
 
   // Utils

@@ -2,6 +2,7 @@ import { EApplicationState } from '../Common/enums.js'
 import Input, { InputEvent } from '../Event/Input.js'
 import Window from '../Core/Window.js'
 import Renderer from '../Renderer/Renderer.js'
+import LevelManager from '../World/Level/LevelManager.js'
 
 export default class Application {
   /** @type {EApplicationState} */
@@ -55,11 +56,14 @@ export default class Application {
 
   Render() {
     Renderer.Render()
+    LevelManager.Render()
 
     this.OnRender()
   }
 
   Update() {
+    LevelManager.Update()
+
     this.OnUpdate()
   }
 

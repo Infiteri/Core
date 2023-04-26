@@ -1,5 +1,5 @@
 import Logger from '../../Core/Logger.js'
-import { gl } from '../Renderer.js'
+import Renderer, { gl } from '../Renderer.js'
 
 export default class Shader {
   constructor(vertexSource, fragmentSource) {
